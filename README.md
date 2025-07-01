@@ -161,6 +161,7 @@ IODLab9/
 │   ├── routes/                          # API endpoints
 │   ├── middleware/                      # Validation middleware
 │   └── data/favorites.json              # Local
+```
 
 ## Technology Comparison
 
