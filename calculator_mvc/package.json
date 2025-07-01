@@ -1,0 +1,74 @@
+{
+  "name": "calculator_mvc",
+  "version": "2.0.0",
+  "description": "Simple Calculator API with proper MVC architecture - Basic Operations Only - Module 9 Lab Exercise 1",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "lint": "eslint . --ext .js",
+    "lint:fix": "eslint . --ext .js --fix",
+    "health-check": "curl -f http://localhost:3004/health || exit 1"
+  },
+  "keywords": [
+    "calculator",
+    "api",
+    "express",
+    "mvc",
+    "nodejs",
+    "restful",
+    "math",
+    "arithmetic",
+    "educational",
+    "iod"
+  ],
+  "author": "IOD Student",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1",
+    "jest": "^29.7.0",
+    "supertest": "^6.3.3",
+    "eslint": "^8.52.0"
+  },
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/IOD"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/IOD/issues"
+  },
+  "homepage": "https://github.com/your-username/IOD#readme",
+  "jest": {
+    "testEnvironment": "node",
+    "collectCoverage": true,
+    "coverageDirectory": "coverage",
+    "coverageReporters": ["text", "lcov", "html"]
+  },
+  "eslintConfig": {
+    "env": {
+      "node": true,
+      "es2021": true,
+      "jest": true
+    },
+    "extends": ["eslint:recommended"],
+    "parserOptions": {
+      "ecmaVersion": 12,
+      "sourceType": "module"
+    },
+    "rules": {
+      "no-console": "off",
+      "no-unused-vars": "warn"
+    }
+  }
+}

@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 9 Lab - Backend Development Portfolio</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --purple-color: #8e44ad;
+            --light-bg: #ecf0f1;
+            --dark-bg: #2c3e50;
+            --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --gradient-4: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --gradient-5: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header Styles */
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 50px;
+            padding: 60px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            font-size: 3.5em;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            font-weight: 700;
+        }
+
+        .header h2 {
+            font-size: 1.8em;
+            margin: 15px 0;
+            font-weight: 300;
+            opacity: 0.9;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.8;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .tech-badges {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .tech-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-size: 0.9em;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        /* Exercise Grid */
+        .exercises-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .exercise-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .exercise-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: var(--gradient-1);
+        }
+
+        .exercise-card:nth-child(2)::before { background: var(--gradient-2); }
+        .exercise-card:nth-child(3)::before { background: var(--gradient-3); }
+        .exercise-card:nth-child(4)::before { background: var(--gradient-4); }
+        .exercise-card:nth-child(5)::before { background: var(--gradient-5); }
+
+        .exercise-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .exercise-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .exercise-icon {
+            font-size: 3em;
+            filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.1));
+        }
+
+        .exercise-title {
+            flex: 1;
+        }
+
+        .exercise-title h3 {
+            font-size: 1.8em;
+            color: var(--secondary-color);
+            margin-bottom: 5px;
+        }
+
+        .exercise-title .subtitle {
+            color: #666;
+            font-size: 1.1em;
+            font-weight: 500;
+        }
+
+        .exercise-description {
+            color: #555;
+            margin-bottom: 25px;
+            line-height: 1.7;
+        }
+
+        .features-list {
+            list-style: none;
+            margin-bottom: 25px;
+        }
+
+        .features-list li {
+            padding: 5px 0;
+            color: #666;
+            position: relative;
+            padding-left: 25px;
+        }
+
+        .features-list li::before {
+            content: '✅';
+            position: absolute;
+            left: 0;
+        }
+
+        .tech-stack {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .tech-tag {
+            background: #f8f9fa;
+            color: #495057;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: 500;
+            border: 1px solid #dee2e6;
+        }
+
+        .exercise-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--secondary-color);
+            border: 2px solid var(--secondary-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--secondary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-complete {
+            background: rgba(39, 174, 96, 0.1);
+            color: var(--success-color);
+            border: 1px solid rgba(39, 174, 96, 0.3);
+        }
+
+        .status-enhanced {
+            background: rgba(142, 68, 173, 0.1);
+            color: var(--purple-color);
+            border: 1px solid rgba(142, 68, 173, 0.3);
+        }
+
+        /* Summary Section */
+        .summary-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-top: 50px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .summary-section h2 {
+            text-align: center;
+            color: var(--secondary-color);
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .summary-card {
+            text-align: center;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border: 1px solid #dee2e6;
+        }
+
+        .summary-card .icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .summary-card h4 {
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+
+        .summary-card p {
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5em;
+            }
+
+            .exercises-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .exercise-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .btn {
+                text-align: center;
+                justify-content: center;
+            }
+
+            .tech-badges {
+                gap: 10px;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .exercise-card {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .exercise-card:nth-child(2) { animation-delay: 0.1s; }
+        .exercise-card:nth-child(3) { animation-delay: 0.2s; }
+        .exercise-card:nth-child(4) { animation-delay: 0.3s; }
+        .exercise-card:nth-child(5) { animation-delay: 0.4s; }
+
+        /* Loading State */
+        .loading {
+            opacity: 0;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 50px;
+            padding: 30px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🚀 Module 9 Lab Portfolio</h1>
+            <h2>Backend Development & Full-Stack Applications</h2>
+            <p>A comprehensive collection of server-side development exercises demonstrating MVC architecture, database integration, real-time communication, and modern web development practices.</p>
+
+            <div class="tech-badges">
+                <span class="tech-badge">Node.js</span>
+                <span class="tech-badge">Express.js</span>
+                <span class="tech-badge">Socket.IO</span>
+                <span class="tech-badge">MongoDB</span>
+                <span class="tech-badge">MySQL</span>
+                <span class="tech-badge">SQLite</span>
+                <span class="tech-badge">MVC Architecture</span>
+                <span class="tech-badge">RESTful APIs</span>
+            </div>
+        </header>
+
+        <main class="exercises-grid">
+            <!-- Exercise 1: Calculator MVC -->
+            <article class="exercise-card">
+                <div class="exercise-header">
+                    <div class="exercise-icon">🧮</div>
+                    <div class="exercise-title">
+                        <h3>Calculator MVC</h3>
+                        <div class="subtitle">Model-View-Controller Architecture</div>
+                    </div>
+                    <span class="status-badge status-complete">Complete</span>
+                </div>
+
+                <p class="exercise-description">
+                    A fully functional calculator application demonstrating the MVC (Model-View-Controller) design pattern. This exercise showcases separation of concerns, with distinct layers for data handling, user interface, and business logic.
+                </p>
+
+                <ul class="features-list">
+                    <li>Clean MVC architecture implementation</li>
+                    <li>Basic arithmetic operations (+, -, ×, ÷)</li>
+                    <li>Error handling and validation</li>
+                    <li>Responsive calculator interface</li>
+                    <li>Clear separation of concerns</li>
+                </ul>
+
+                <div class="tech-stack">
+                    <span class="tech-tag">JavaScript</span>
+                    <span class="tech-tag">HTML5</span>
+                    <span class="tech-tag">CSS3</span>
+                    <span class="tech-tag">MVC Pattern</span>
+                </div>
+
+                <div class="exercise-actions">
+                    <a href="calculator_mvc/index.html" class="btn btn-primary" target="_blank">
+                        🚀 Launch App
+                    </a>
+                    <a href="calculator_mvc/" class="btn btn-secondary">
+                        📁 View Code
+                    </a>
+                </div>
+            </article>
+
+            <!-- Exercise 2: MySQL Blog -->
+            <article class="exercise-card">
+                <div class="exercise-header">
+                    <div class="exercise-icon">📝</div>
+                    <div class="exercise-title">
+                        <h3>MySQL Blog Platform</h3>
+                        <div class="subtitle">Relational Database Integration</div>
+                    </div>
+                    <span class="status-badge status-complete">Complete</span>
+                </div>
+
+                <p class="exercise-description">
+                    A full-featured blog platform built with Express.js and MySQL, demonstrating relational database operations, CRUD functionality, and server-side rendering with robust data persistence.
+                </p>
+
+                <ul class="features-list">
+                    <li>MySQL database integration</li>
+                    <li>Complete CRUD operations</li>
+                    <li>Blog post management system</li>
+                    <li>User authentication flow</li>
+                    <li>Server-side templating</li>
+                </ul>
+
+                <div class="tech-stack">
+                    <span class="tech-tag">Node.js</span>
+                    <span class="tech-tag">Express.js</span>
+                    <span class="tech-tag">MySQL</span>
+                    <span class="tech-tag">EJS</span>
+                    <span class="tech-tag">Bootstrap</span>
+                </div>
+
+                <div class="exercise-actions">
+                    <a href="mysql_blog_implementation/" class="btn btn-primary">
+                        🚀 View Project
+                    </a>
+                    <a href="mysql_blog_implementation/README.md" class="btn btn-secondary">
+                        📖 Documentation
+                    </a>
+                </div>
+            </article>
+
+            <!-- Exercise 3: MongoDB Blog -->
+            <article class="exercise-card">
+                <div class="exercise-header">
+                    <div class="exercise-icon">🍃</div>
+                    <div class="exercise-title">
+                        <h3>MongoDB Blog Platform</h3>
+                        <div class="subtitle">NoSQL Database Implementation</div>
+                    </div>
+                    <span class="status-badge status-complete">Complete</span>
+                </div>
+
+                <p class="exercise-description">
+                    A modern blog platform leveraging MongoDB's flexible document structure, showcasing NoSQL database operations, Mongoose ODM, and scalable application architecture for content management.
+                </p>
+
+                <ul class="features-list">
+                    <li>MongoDB with Mongoose ODM</li>
+                    <li>Document-based data modeling</li>
+                    <li>RESTful API endpoints</li>
+                    <li>Schema validation & middleware</li>
+                    <li>Aggregation pipelines</li>
+                </ul>
+
+                <div class="tech-stack">
+                    <span class="tech-tag">Node.js</span>
+                    <span class="tech-tag">Express.js</span>
+                    <span class="tech-tag">MongoDB</span>
+                    <span class="tech-tag">Mongoose</span>
+                    <span class="tech-tag">RESTful API</span>
+                </div>
+
+                <div class="exercise-actions">
+                    <a href="mongodb_blog_implementation/" class="btn btn-primary">
+                        🚀 View Project
+                    </a>
+                    <a href="mongodb_blog_implementation/README.md" class="btn btn-secondary">
+                        📖 Documentation
+                    </a>
+                </div>
+            </article>
+
+            <!-- Exercise 4: Rick and Morty App -->
+            <article class="exercise-card">
+                <div class="exercise-header">
+                    <div class="exercise-icon">🛸</div>
+                    <div class="exercise-title">
+                        <h3>Rick & Morty API App</h3>
+                        <div class="subtitle">External API Integration</div>
+                    </div>
+                    <span class="status-badge status-complete">Complete</span>
+                </div>
+
+                <p class="exercise-description">
+                    An interactive application consuming the Rick and Morty API, demonstrating external API integration, data fetching, error handling, and dynamic content rendering with search and filtering capabilities.
+                </p>
+
+                <ul class="features-list">
+                    <li>External API consumption</li>
+                    <li>Dynamic content rendering</li>
+                    <li>Search and filtering system</li>
+                    <li>Responsive character cards</li>
+                    <li>Error handling & loading states</li>
+                </ul>
+
+                <div class="tech-stack">
+                    <span class="tech-tag">JavaScript</span>
+                    <span class="tech-tag">Fetch API</span>
+                    <span class="tech-tag">HTML5</span>
+                    <span class="tech-tag">CSS3</span>
+                    <span class="tech-tag">Rick & Morty API</span>
+                </div>
+
+                <div class="exercise-actions">
+                    <a href="rickandmorty_app/index.html" class="btn btn-primary" target="_blank">
+                        🚀 Launch App
+                    </a>
+                    <a href="rickandmorty_app/" class="btn btn-secondary">
+                        📁 View Code
+                    </a>
+                </div>
+            </article>
+
+            <!-- Exercise 5: Enhanced Chat App -->
+            <article class="exercise-card">
+                <div class="exercise-header">
+                    <div class="exercise-icon">💬</div>
+                    <div class="exercise-title">
+                        <h3>Enhanced Chat Application</h3>
+                        <div class="subtitle">Real-time Communication Platform</div>
+                    </div>
+                    <span class="status-badge status-enhanced">Enhanced</span>
+                </div>
+
+                <p class="exercise-description">
+                    A feature-rich real-time chat platform with advanced functionality including private messaging, user avatars, theme switching, bot integration, and persistent message history. <strong>Works seamlessly in both live server mode and offline demo mode</strong> for easy portfolio viewing.
+                </p>
+
+                <ul class="features-list">
+                    <li>Real-time messaging with Socket.IO</li>
+                    <li>Private messaging system</li>
+                    <li>User avatars & status indicators</li>
+                    <li>Dark/Light theme toggle</li>
+                    <li>Message search & history</li>
+                    <li>Interactive chat bot</li>
+                    <li>SQLite database persistence</li>
+                    <li>Graceful offline demo mode with bot responses</li>
+                </ul>
+
+                <div class="tech-stack">
+                    <span class="tech-tag">Node.js</span>
+                    <span class="tech-tag">Express.js</span>
+                    <span class="tech-tag">Socket.IO</span>
+                    <span class="tech-tag">SQLite</span>
+                    <span class="tech-tag">Real-time</span>
+                    <span class="tech-tag">Progressive Web App</span>
+                </div>
+
+                <div class="exercise-actions">
+                    <a href="chat_app/" class="btn btn-primary" target="_blank">
+                        🚀 Launch Chat
+                    </a>
+                    <a href="chat_app/" class="btn btn-secondary">
+                        📁 View Code
+                    </a>
+                </div>
+            </article>
+        </main>
+
+        <section class="summary-section">
+            <h2>📊 Learning Outcomes & Skills Demonstrated</h2>
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <div class="icon">🏗️</div>
+                    <h4>Architecture Patterns</h4>
+                    <p>MVC design pattern, separation of concerns, modular application structure</p>
+                </div>
+                <div class="summary-card">
+                    <div class="icon">🗄️</div>
+                    <h4>Database Integration</h4>
+                    <p>MySQL, MongoDB, SQLite implementations with CRUD operations</p>
+                </div>
+                <div class="summary-card">
+                    <div class="icon">⚡</div>
+                    <h4>Real-time Features</h4>
+                    <p>WebSocket connections, live updates, interactive messaging</p>
+                </div>
+                <div class="summary-card">
+                    <div class="icon">🌐</div>
+                    <h4>API Development</h4>
+                    <p>RESTful services, external API consumption, data processing</p>
+                </div>
+                <div class="summary-card">
+                    <div class="icon">🎨</div>
+                    <h4>User Experience</h4>
+                    <p>Responsive design, interactive interfaces, modern UI/UX</p>
+                </div>
+                <div class="summary-card">
+                    <div class="icon">🔧</div>
+                    <h4>Full-Stack Development</h4>
+                    <p>Frontend and backend integration, complete application lifecycle</p>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <p>🎓 Institute of Data - Module 9 Backend Development Laboratory</p>
+            <p>Demonstrating advanced web development concepts and modern application architecture</p>
+        </footer>
+    </div>
+
+    <script>
+        // Add smooth scrolling and interaction effects
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate cards on scroll
+            const cards = document.querySelectorAll('.exercise-card');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            cards.forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+                card.style.transition = 'all 0.6s ease';
+                observer.observe(card);
+            });
+
+            // Add click analytics
+            document.querySelectorAll('.btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    const exerciseName = this.closest('.exercise-card').querySelector('h3').textContent;
+                    console.log(`Clicked: ${this.textContent.trim()} for ${exerciseName}`);
+                });
+            });
+        });
+
+        // Check if chat server is running
+        // Chat server check removed - app now handles offline state gracefully
+
+        // Add some interactive effects
+        document.querySelectorAll('.exercise-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-10px) scale(1.02)';
+            });
+
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Theme detection
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.body.classList.add('dark-theme');
+        }
+    </script>
+</body>
+</html>

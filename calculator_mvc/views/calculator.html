@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Simple Calculator - MVC Architecture</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                max-width: 600px;
+                margin: 50px auto;
+                padding: 20px;
+                background-color: #f5f5f5;
+            }
+
+            .calculator {
+                background: white;
+                padding: 30px;
+                border-radius: 10px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
+
+            h1 {
+                text-align: center;
+                color: #333;
+                margin-bottom: 20px;
+            }
+
+            .subtitle {
+                text-align: center;
+                color: #666;
+                margin-bottom: 30px;
+                font-style: italic;
+            }
+
+            .input-group {
+                margin-bottom: 20px;
+            }
+
+            label {
+                display: block;
+                margin-bottom: 5px;
+                font-weight: bold;
+                color: #555;
+            }
+
+            input[type="number"] {
+                width: 100%;
+                padding: 10px;
+                border: 2px solid #ddd;
+                border-radius: 5px;
+                font-size: 16px;
+                box-sizing: border-box;
+            }
+
+            input[type="number"]:focus {
+                border-color: #007bff;
+                outline: none;
+            }
+
+            .button-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+                margin: 20px 0;
+            }
+
+            .history-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+                margin: 20px 0;
+            }
+
+            .calc-button {
+                padding: 15px 20px;
+                font-size: 18px;
+                font-weight: bold;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+
+            .add-btn {
+                background-color: #28a745;
+                color: white;
+            }
+
+            .subtract-btn {
+                background-color: #dc3545;
+                color: white;
+            }
+
+            .multiply-btn {
+                background-color: #007bff;
+                color: white;
+            }
+
+            .divide-btn {
+                background-color: #fd7e14;
+                color: white;
+            }
+
+            .history-btn {
+                background-color: #6c757d;
+                color: white;
+            }
+
+            .clear-btn {
+                background-color: #dc3545;
+                color: white;
+            }
+
+            .calc-button:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            }
+
+            .calc-button:active {
+                transform: translateY(0);
+            }
+
+            .result-section {
+                margin-top: 30px;
+                padding: 20px;
+                background-color: #f8f9fa;
+                border-radius: 5px;
+                border-left: 4px solid #007bff;
+            }
+
+            .result-label {
+                font-weight: bold;
+                color: #333;
+                margin-bottom: 10px;
+            }
+
+            .result-display {
+                font-size: 24px;
+                font-weight: bold;
+                color: #007bff;
+                padding: 10px;
+                background: white;
+                border-radius: 5px;
+                min-height: 40px;
+                display: flex;
+                align-items: center;
+            }
+
+            .operation-display {
+                font-size: 14px;
+                color: #666;
+                margin-bottom: 5px;
+            }
+
+            .error {
+                color: #dc3545;
+            }
+
+            .success {
+                color: #28a745;
+            }
+
+            .loading {
+                color: #fd7e14;
+            }
+
+            .api-info {
+                margin-top: 20px;
+                padding: 15px;
+                background-color: #e9ecef;
+                border-radius: 5px;
+                font-size: 12px;
+                color: #666;
+            }
+
+            .history-section {
+                margin-top: 30px;
+                padding: 20px;
+                background-color: #f8f9fa;
+                border-radius: 5px;
+                border-left: 4px solid #28a745;
+            }
+
+            .history-item {
+                padding: 8px;
+                margin: 5px 0;
+                background: white;
+                border-radius: 3px;
+                font-size: 14px;
+            }
+
+            .stats-section {
+                margin-top: 20px;
+                padding: 15px;
+                background-color: #fff3cd;
+                border-radius: 5px;
+                border-left: 4px solid #ffc107;
+            }
+
+            .hidden {
+                display: none;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="calculator">
+            <h1>🧮 Simple Calculator</h1>
+            <p class="subtitle">MVC Architecture</p>
+            <p style="text-align: center; color: #666; margin-bottom: 30px">
+                Connected to Calculator API (Port 3004)
+            </p>
+
+            <div class="input-group">
+                <label for="num1">First Number:</label>
+                <input
+                    type="number"
+                    id="num1"
+                    placeholder="Enter first number"
+                    step="any"
+                />
+            </div>
+
+            <div class="input-group">
+                <label for="num2">Second Number:</label>
+                <input
+                    type="number"
+                    id="num2"
+                    placeholder="Enter second number"
+                    step="any"
+                />
+            </div>
+
+            <div class="button-grid">
+                <button
+                    class="calc-button add-btn"
+                    onclick="performOperation('add')"
+                >
+                    ➕ Add
+                </button>
+                <button
+                    class="calc-button subtract-btn"
+                    onclick="performOperation('subtract')"
+                >
+                    ➖ Subtract
+                </button>
+                <button
+                    class="calc-button multiply-btn"
+                    onclick="performOperation('multiply')"
+                >
+                    ✖️ Multiply
+                </button>
+                <button
+                    class="calc-button divide-btn"
+                    onclick="performOperation('divide')"
+                >
+                    ➗ Divide
+                </button>
+            </div>
+
+            <div class="history-grid">
+                <button class="calc-button history-btn" onclick="showHistory()">
+                    📋 History
+                </button>
+                <button class="calc-button clear-btn" onclick="clearHistory()">
+                    🗑️ Clear History
+                </button>
+            </div>
+
+            <div class="result-section">
+                <div class="result-label">Result:</div>
+                <div class="operation-display" id="operationDisplay"></div>
+                <div class="result-display" id="result">
+                    Enter numbers and click an operation
+                </div>
+            </div>
+
+            <!-- History Section -->
+            <div class="history-section hidden" id="historySection">
+                <div class="result-label">Calculation History:</div>
+                <div id="historyContent">No history available</div>
+            </div>
+
+            <!-- Statistics Section -->
+            <div class="stats-section hidden" id="statsSection">
+                <div class="result-label">Calculator Statistics:</div>
+                <div id="statsContent">No statistics available</div>
+            </div>
+
+            <div class="api-info">
+                <strong>API Endpoints:</strong><br />
+                • Basic: GET /calculator/add?num1=X&num2=Y<br />
+                • Operations: add, subtract, multiply, divide<br />
+                • History: GET /calculator/history?limit=N<br />
+                • Stats: GET /calculator/stats<br />
+                • Health: GET /calculator/health
+            </div>
+        </div>
+
+        <script>
+            // API base URL for Calculator
+            const API_BASE_URL = "http://localhost:3004";
+
+            // Operation symbols for display
+            const operationSymbols = {
+                add: "+",
+                subtract: "-",
+                multiply: "×",
+                divide: "÷"
+            };
+
+            // UI state management
+            let isShowingHistory = false;
+            let isShowingStats = false;
+
+            // Function to perform calculator operations
+            async function performOperation(operation) {
+                const num1Input = document.getElementById("num1");
+                const num2Input = document.getElementById("num2");
+                const resultDisplay = document.getElementById("result");
+                const operationDisplay =
+                    document.getElementById("operationDisplay");
+
+                const num1 = num1Input.value;
+                const num2 = num2Input.value;
+
+                // Validation
+                if (!num1 || !num2) {
+                    showResult("Please enter both numbers", "error");
+                    operationDisplay.textContent = "";
+                    return;
+                }
+
+                if (isNaN(num1) || isNaN(num2)) {
+                    showResult("Please enter valid numbers", "error");
+                    operationDisplay.textContent = "";
+                    return;
+                }
+
+                // Show loading state
+                showResult("Calculating...", "loading");
+                operationDisplay.textContent = `${num1} ${operationSymbols[operation]} ${num2} = ?`;
+
+                try {
+                    // Build API URL
+                    const url = `${API_BASE_URL}/calculator/${operation}?num1=${encodeURIComponent(num1)}&num2=${encodeURIComponent(num2)}`;
+
+                    // Make API call
+                    const response = await fetch(url);
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(
+                            data.error || data.message || "API request failed",
+                        );
+                    }
+
+                    // Display successful result
+                    showResult(data.result, "success");
+                    operationDisplay.textContent = `${num1} ${operationSymbols[data.operation] || operationSymbols[operation]} ${num2} = ${data.result}`;
+
+                    // Log to console for debugging
+                    console.log("API Response:", data);
+
+                    // Auto-refresh stats if visible
+                    if (isShowingStats) {
+                        setTimeout(loadStats, 500);
+                    }
+                } catch (error) {
+                    console.error("Error:", error);
+                    showResult(`Error: ${error.message}`, "error");
+                    operationDisplay.textContent = `${num1} ${operationSymbols[operation]} ${num2} = ERROR`;
+                }
+            }
+
+            // Function to show calculation history
+            async function showHistory() {
+                const historySection =
+                    document.getElementById("historySection");
+                const historyContent =
+                    document.getElementById("historyContent");
+
+                if (isShowingHistory) {
+                    historySection.classList.add("hidden");
+                    isShowingHistory = false;
+                    return;
+                }
+
+                try {
+                    const response = await fetch(
+                        `${API_BASE_URL}/calculator/history?limit=10`,
+                    );
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(data.error || "Failed to load history");
+                    }
+
+                    if (data.history && data.history.length > 0) {
+                        historyContent.innerHTML = data.history
+                            .map(
+                                (item) =>
+                                    `<div class="history-item">
+                            ${item.num1} ${item.operation} ${item.num2} = ${item.result}
+                            <small style="color: #666; float: right;">${new Date(item.timestamp).toLocaleTimeString()}</small>
+                        </div>`,
+                            )
+                            .join("");
+                    } else {
+                        historyContent.innerHTML =
+                            '<div class="history-item">No calculations performed yet</div>';
+                    }
+
+                    historySection.classList.remove("hidden");
+                    isShowingHistory = true;
+                } catch (error) {
+                    console.error("History error:", error);
+                    historyContent.innerHTML = `<div class="history-item" style="color: #dc3545;">Error loading history: ${error.message}</div>`;
+                    historySection.classList.remove("hidden");
+                    isShowingHistory = true;
+                }
+            }
+
+            // Function to clear calculation history
+            async function clearHistory() {
+                if (
+                    !confirm(
+                        "Are you sure you want to clear all calculation history?",
+                    )
+                ) {
+                    return;
+                }
+
+                try {
+                    const response = await fetch(
+                        `${API_BASE_URL}/calculator/history`,
+                        {
+                            method: "DELETE",
+                        },
+                    );
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(
+                            data.error || "Failed to clear history",
+                        );
+                    }
+
+                    showResult("History cleared successfully", "success");
+
+                    // Hide history section
+                    const historySection =
+                        document.getElementById("historySection");
+                    historySection.classList.add("hidden");
+                    isShowingHistory = false;
+
+                    // Refresh stats if visible
+                    if (isShowingStats) {
+                        setTimeout(loadStats, 500);
+                    }
+                } catch (error) {
+                    console.error("Clear history error:", error);
+                    showResult(
+                        `Error clearing history: ${error.message}`,
+                        "error",
+                    );
+                }
+            }
+
+            // Function to load and show statistics
+            async function loadStats() {
+                try {
+                    const response = await fetch(
+                        `${API_BASE_URL}/calculator/stats`,
+                    );
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(data.error || "Failed to load stats");
+                    }
+
+                    const statsSection =
+                        document.getElementById("statsSection");
+                    const statsContent =
+                        document.getElementById("statsContent");
+
+                    const stats = data.stats;
+                    const operationCounts =
+                        Object.entries(stats.operationCounts || {})
+                            .map(([op, count]) => `${op}: ${count}`)
+                            .join(", ") || "None";
+
+                    statsContent.innerHTML = `
+                    <div><strong>Total Operations:</strong> ${stats.totalOperations}</div>
+                    <div><strong>Operations:</strong> ${operationCounts}</div>
+                    <div><strong>Calculator ID:</strong> ${stats.calculatorId}</div>
+                `;
+
+                    statsSection.classList.remove("hidden");
+                    isShowingStats = true;
+                } catch (error) {
+                    console.error("Stats error:", error);
+                }
+            }
+
+            // Function to display results with different styles
+            function showResult(message, type = "success") {
+                const resultDisplay = document.getElementById("result");
+                resultDisplay.textContent = message;
+
+                // Remove all type classes
+                resultDisplay.classList.remove("success", "error", "loading");
+
+                // Add appropriate class
+                if (type) {
+                    resultDisplay.classList.add(type);
+                }
+            }
+
+            // Add Enter key support for inputs
+            document
+                .getElementById("num1")
+                .addEventListener("keypress", function (e) {
+                    if (e.key === "Enter") {
+                        document.getElementById("num2").focus();
+                    }
+                });
+
+            document
+                .getElementById("num2")
+                .addEventListener("keypress", function (e) {
+                    if (e.key === "Enter") {
+                        // Default to addition when Enter is pressed
+                        performOperation("add");
+                    }
+                });
+
+            // Add keyboard shortcuts
+            document.addEventListener("keydown", function (e) {
+                if (e.ctrlKey || e.metaKey) {
+                    switch (e.key) {
+                        case "+":
+                        case "=":
+                            e.preventDefault();
+                            performOperation("add");
+                            break;
+                        case "-":
+                            e.preventDefault();
+                            performOperation("subtract");
+                            break;
+                        case "*":
+                            e.preventDefault();
+                            performOperation("multiply");
+                            break;
+                        case "/":
+                            e.preventDefault();
+                            performOperation("divide");
+                            break;
+                    }
+                }
+            });
+
+            // Initialize with welcome message and load stats
+            window.addEventListener("load", function () {
+                showResult("Enter numbers and click an operation", "");
+                console.log(
+                    "Simple Calculator loaded. API base URL:",
+                    API_BASE_URL,
+                );
+
+                // Load initial stats
+                loadStats();
+
+                // Health check
+                fetch(`${API_BASE_URL}/calculator/health`)
+                    .then((response) => response.json())
+                    .then((data) => {
+                        console.log("Calculator API Health:", data);
+                    })
+                    .catch((error) => {
+                        console.warn(
+                            "Calculator API might not be running:",
+                            error,
+                        );
+                    });
+            });
+        </script>
+    </body>
+</html>

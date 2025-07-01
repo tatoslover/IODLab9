@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rick & Morty Character Explorer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #00b4db 0%, #0083b0 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            padding: 40px 0;
+        }
+
+        .header h1 {
+            font-size: 3.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .controls {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 300px;
+            padding: 12px 20px;
+            border: 2px solid #ddd;
+            border-radius: 25px;
+            font-size: 1em;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-input:focus {
+            border-color: #00b4db;
+        }
+
+        .filter-select {
+            padding: 12px 20px;
+            border: 2px solid #ddd;
+            border-radius: 25px;
+            font-size: 1em;
+            outline: none;
+            background: white;
+            cursor: pointer;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            background: #00b4db;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #0083b0;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 180, 219, 0.4);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .stats {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .stat-item {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #00b4db;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: white;
+            font-size: 1.2em;
+        }
+
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 3px solid white;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #e74c3c;
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .characters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .character-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .character-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .character-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+
+        .character-info {
+            padding: 20px;
+        }
+
+        .character-name {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .character-details {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #666;
+        }
+
+        .detail-value {
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-alive {
+            background: rgba(39, 174, 96, 0.1);
+            color: #27ae60;
+        }
+
+        .status-dead {
+            background: rgba(231, 76, 60, 0.1);
+            color: #e74c3c;
+        }
+
+        .status-unknown {
+            background: rgba(149, 165, 166, 0.1);
+            color: #95a5a6;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .page-btn {
+            padding: 10px 15px;
+            background: white;
+            color: #00b4db;
+            border: 2px solid #00b4db;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .page-btn:hover {
+            background: #00b4db;
+            color: white;
+        }
+
+        .page-btn.active {
+            background: #00b4db;
+            color: white;
+        }
+
+        .page-btn:disabled {
+            background: #f8f9fa;
+            color: #ccc;
+            border-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .page-info {
+            color: white;
+            font-weight: 600;
+        }
+
+        .no-results {
+            text-align: center;
+            color: white;
+            font-size: 1.2em;
+            padding: 50px;
+        }
+
+        .back-link {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #00b4db;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .back-link:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5em;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-input {
+                min-width: 100%;
+            }
+
+            .characters-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 15px;
+            }
+
+            .stats {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="../" class="back-link">← Back to Portfolio</a>
+
+    <div class="container">
+        <header class="header">
+            <h1>🛸 Rick & Morty Character Explorer</h1>
+            <p>Explore characters from the multiverse with the Rick and Morty API</p>
+        </header>
+
+        <div class="controls">
+            <input type="text" class="search-input" id="searchInput" placeholder="Search characters by name...">
+
+            <select class="filter-select" id="statusFilter">
+                <option value="">All Status</option>
+                <option value="alive">Alive</option>
+                <option value="dead">Dead</option>
+                <option value="unknown">Unknown</option>
+            </select>
+
+            <select class="filter-select" id="genderFilter">
+                <option value="">All Genders</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="genderless">Genderless</option>
+                <option value="unknown">Unknown</option>
+            </select>
+
+            <button class="btn" id="searchBtn">Search</button>
+            <button class="btn" id="clearBtn">Clear</button>
+        </div>
+
+        <div class="stats" id="stats">
+            <div class="stat-item">
+                <div class="stat-number" id="totalCharacters">0</div>
+                <div class="stat-label">Total Characters</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="currentPage">1</div>
+                <div class="stat-label">Current Page</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="totalPages">0</div>
+                <div class="stat-label">Total Pages</div>
+            </div>
+        </div>
+
+        <div id="loading" class="loading" style="display: none;">
+            Loading awesome characters
+        </div>
+
+        <div id="error" class="error" style="display: none;"></div>
+
+        <div id="noResults" class="no-results" style="display: none;">
+            No characters found. Try a different search!
+        </div>
+
+        <div class="characters-grid" id="charactersGrid"></div>
+
+        <div class="pagination" id="pagination" style="display: none;">
+            <button class="page-btn" id="prevBtn">← Previous</button>
+            <span class="page-info" id="pageInfo"></span>
+            <button class="page-btn" id="nextBtn">Next →</button>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'https://rickandmortyapi.com/api';
+        let currentPage = 1;
+        let totalPages = 1;
+        let isLoading = false;
+
+        // DOM elements
+        const searchInput = document.getElementById('searchInput');
+        const statusFilter = document.getElementById('statusFilter');
+        const genderFilter = document.getElementById('genderFilter');
+        const searchBtn = document.getElementById('searchBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const charactersGrid = document.getElementById('charactersGrid');
+        const loading = document.getElementById('loading');
+        const error = document.getElementById('error');
+        const noResults = document.getElementById('noResults');
+        const pagination = document.getElementById('pagination');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const pageInfo = document.getElementById('pageInfo');
+        const totalCharacters = document.getElementById('totalCharacters');
+        const currentPageStat = document.getElementById('currentPage');
+        const totalPagesStat = document.getElementById('totalPages');
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', () => {
+            loadCharacters();
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            searchBtn.addEventListener('click', handleSearch);
+            clearBtn.addEventListener('click', handleClear);
+            searchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') handleSearch();
+            });
+            prevBtn.addEventListener('click', () => changePage(currentPage - 1));
+            nextBtn.addEventListener('click', () => changePage(currentPage + 1));
+        }
+
+        async function loadCharacters(page = 1, filters = {}) {
+            if (isLoading) return;
+
+            isLoading = true;
+            showLoading();
+            hideError();
+            hideNoResults();
+
+            try {
+                const params = new URLSearchParams({
+                    page: page.toString(),
+                    ...filters
+                });
+
+                const response = await fetch(`${API_BASE_URL}/character?${params}`);
+                const data = await response.json();
+
+                if (response.ok) {
+                    displayCharacters(data.results);
+                    updatePagination(data.info);
+                    updateStats(data.info);
+                } else {
+                    if (response.status === 404) {
+                        showNoResults();
+                    } else {
+                        throw new Error(data.error || 'Failed to fetch characters');
+                    }
+                }
+            } catch (err) {
+                console.error('Error fetching characters:', err);
+                showError('Failed to load characters. Please try again.');
+            } finally {
+                hideLoading();
+                isLoading = false;
+            }
+        }
+
+        function displayCharacters(characters) {
+            if (!characters || characters.length === 0) {
+                showNoResults();
+                return;
+            }
+
+            charactersGrid.innerHTML = characters.map(character => `
+                <div class="character-card">
+                    <img src="${character.image}" alt="${character.name}" class="character-image">
+                    <div class="character-info">
+                        <div class="character-name">${character.name}</div>
+                        <div class="character-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Status:</span>
+                                <span class="status-badge status-${character.status.toLowerCase()}">${character.status}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Species:</span>
+                                <span class="detail-value">${character.species}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Gender:</span>
+                                <span class="detail-value">${character.gender}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Origin:</span>
+                                <span class="detail-value">${character.origin.name}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Location:</span>
+                                <span class="detail-value">${character.location.name}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updatePagination(info) {
+            currentPage = info.pages > 0 ? Math.min(currentPage, info.pages) : 1;
+            totalPages = info.pages;
+
+            if (info.pages <= 1) {
+                pagination.style.display = 'none';
+                return;
+            }
+
+            pagination.style.display = 'flex';
+            prevBtn.disabled = currentPage === 1;
+            nextBtn.disabled = currentPage === totalPages;
+            pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+        }
+
+        function updateStats(info) {
+            totalCharacters.textContent = info.count || 0;
+            currentPageStat.textContent = currentPage;
+            totalPagesStat.textContent = totalPages;
+        }
+
+        function handleSearch() {
+            const filters = {};
+
+            if (searchInput.value.trim()) {
+                filters.name = searchInput.value.trim();
+            }
+
+            if (statusFilter.value) {
+                filters.status = statusFilter.value;
+            }
+
+            if (genderFilter.value) {
+                filters.gender = genderFilter.value;
+            }
+
+            currentPage = 1;
+            loadCharacters(1, filters);
+        }
+
+        function handleClear() {
+            searchInput.value = '';
+            statusFilter.value = '';
+            genderFilter.value = '';
+            currentPage = 1;
+            loadCharacters();
+        }
+
+        function changePage(page) {
+            if (page < 1 || page > totalPages || page === currentPage) return;
+
+            currentPage = page;
+            const filters = getFilters();
+            loadCharacters(page, filters);
+
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function getFilters() {
+            const filters = {};
+
+            if (searchInput.value.trim()) {
+                filters.name = searchInput.value.trim();
+            }
+
+            if (statusFilter.value) {
+                filters.status = statusFilter.value;
+            }
+
+            if (genderFilter.value) {
+                filters.gender = genderFilter.value;
+            }
+
+            return filters;
+        }
+
+        // function showCharacterDetails(characterId) {
+        //     // Could implement a modal or detailed view here
+        //     alert(`Character ID: ${characterId}\n\nClick OK to view more details on the Rick and Morty Wiki!`);
+        //     window.open(`https://rickandmorty.fandom.com/wiki/Character_${characterId}`, '_blank');
+        // }
+
+        function showLoading() {
+            loading.style.display = 'block';
+            charactersGrid.style.display = 'none';
+        }
+
+        function hideLoading() {
+            loading.style.display = 'none';
+            charactersGrid.style.display = 'grid';
+        }
+
+        function showError(message) {
+            error.textContent = message;
+            error.style.display = 'block';
+            charactersGrid.style.display = 'none';
+            pagination.style.display = 'none';
+        }
+
+        function hideError() {
+            error.style.display = 'none';
+        }
+
+        function showNoResults() {
+            noResults.style.display = 'block';
+            charactersGrid.style.display = 'none';
+            pagination.style.display = 'none';
+        }
+
+        function hideNoResults() {
+            noResults.style.display = 'none';
+        }
+
+        // Add some fun easter eggs
+        let clickCount = 0;
+        document.addEventListener('click', () => {
+            clickCount++;
+            if (clickCount === 20) {
+                alert('🛸 You found the easter egg! Keep exploring the multiverse!');
+                clickCount = 0;
+            }
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case 'k':
+                        e.preventDefault();
+                        searchInput.focus();
+                        break;
+                    case 'ArrowLeft':
+                        e.preventDefault();
+                        if (!prevBtn.disabled) changePage(currentPage - 1);
+                        break;
+                    case 'ArrowRight':
+                        e.preventDefault();
+                        if (!nextBtn.disabled) changePage(currentPage + 1);
+                        break;
+                }
+            }
+        });
+
+        console.log('🛸 Rick & Morty Character Explorer loaded!');
+        console.log('💡 Tip: Use Ctrl+K to focus search, Ctrl+Arrow keys for pagination');
+    </script>
+</body>
+</html>

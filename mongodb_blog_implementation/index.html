@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MongoDB Blog Platform - Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .back-link {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #11998e;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .back-link:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            padding: 60px 0;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            font-size: 3.5em;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .tech-badges {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .tech-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-size: 0.9em;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .content-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .feature-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            border-left: 5px solid #11998e;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .feature-card p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .feature-list li {
+            padding: 5px 0;
+            color: #555;
+            position: relative;
+            padding-left: 25px;
+        }
+
+        .feature-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #11998e;
+            font-weight: bold;
+        }
+
+        .mock-blog {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .blog-header {
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .blog-title {
+            color: #2c3e50;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .blog-subtitle {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .blog-post {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-left: 4px solid #11998e;
+        }
+
+        .post-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .post-author {
+            font-weight: 600;
+            color: #11998e;
+        }
+
+        .post-date {
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+
+        .post-title {
+            color: #2c3e50;
+            font-size: 1.4em;
+            margin-bottom: 15px;
+        }
+
+        .post-content {
+            color: #555;
+            line-height: 1.7;
+            margin-bottom: 15px;
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .btn-primary {
+            background: #11998e;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-success {
+            background: #38ef7d;
+            color: #2c3e50;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .database-schema {
+            background: #2c3e50;
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 30px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+
+        .schema-title {
+            color: #38ef7d;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .json-code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            white-space: pre-wrap;
+            font-size: 0.9em;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+
+        .btn-large {
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border-radius: 30px;
+        }
+
+        .status-banner {
+            background: #ffc107;
+            color: #856404;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        .comparison-table {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+            overflow-x: auto;
+        }
+
+        .comparison-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .comparison-table th {
+            background: #11998e;
+            color: white;
+            font-weight: 600;
+        }
+
+        .comparison-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5em;
+            }
+
+            .demo-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .post-meta {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="../" class="back-link">← Back to Portfolio</a>
+
+    <div class="container">
+        <header class="header">
+            <h1>🍃 MongoDB Blog Platform</h1>
+            <p>A modern blog platform leveraging MongoDB's flexible document structure, showcasing NoSQL database operations, Mongoose ODM, and scalable application architecture.</p>
+
+            <div class="tech-badges">
+                <span class="tech-badge">Node.js</span>
+                <span class="tech-badge">Express.js</span>
+                <span class="tech-badge">MongoDB</span>
+                <span class="tech-badge">Mongoose ODM</span>
+                <span class="tech-badge">RESTful API</span>
+                <span class="tech-badge">JSON Schema</span>
+            </div>
+        </header>
+
+        <div class="status-banner">
+            ⚠️ This is a demo page. The actual MongoDB blog requires database setup and server configuration.
+        </div>
+
+        <section class="content-section">
+            <h2>🎯 Project Overview</h2>
+            <p>This MongoDB Blog Platform demonstrates a complete NoSQL-based application architecture. Built with Express.js and MongoDB, it showcases document-oriented database design, schema validation, and the flexibility of NoSQL for content management systems.</p>
+
+            <div class="demo-grid">
+                <div class="feature-card">
+                    <h3>🍃 NoSQL Features</h3>
+                    <ul class="feature-list">
+                        <li>MongoDB document database</li>
+                        <li>Flexible schema design</li>
+                        <li>Embedded documents & arrays</li>
+                        <li>Aggregation pipelines</li>
+                        <li>Index optimization</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>📦 Mongoose ODM</h3>
+                    <ul class="feature-list">
+                        <li>Schema validation & types</li>
+                        <li>Middleware hooks</li>
+                        <li>Query building & methods</li>
+                        <li>Population & references</li>
+                        <li>Virtual properties</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>📖 Content Management</h3>
+                    <ul class="feature-list">
+                        <li>Rich blog post creation</li>
+                        <li>Dynamic categorization</li>
+                        <li>Tag system with arrays</li>
+                        <li>Comment threading</li>
+                        <li>Content search & filtering</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>🌐 API Architecture</h3>
+                    <ul class="feature-list">
+                        <li>RESTful endpoints</li>
+                        <li>JSON data format</li>
+                        <li>Async/await patterns</li>
+                        <li>Error handling middleware</li>
+                        <li>Response formatting</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2>📊 MongoDB vs MySQL Comparison</h2>
+            <div class="comparison-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>MongoDB (NoSQL)</th>
+                            <th>MySQL (SQL)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Data Structure</td>
+                            <td>Document-based (JSON-like)</td>
+                            <td>Table-based (rows & columns)</td>
+                        </tr>
+                        <tr>
+                            <td>Schema</td>
+                            <td>Flexible, dynamic schema</td>
+                            <td>Fixed, predefined schema</td>
+                        </tr>
+                        <tr>
+                            <td>Relationships</td>
+                            <td>Embedded docs & references</td>
+                            <td>Foreign keys & joins</td>
+                        </tr>
+                        <tr>
+                            <td>Query Language</td>
+                            <td>MongoDB Query Language</td>
+                            <td>SQL (Structured Query Language)</td>
+                        </tr>
+                        <tr>
+                            <td>Scalability</td>
+                            <td>Horizontal scaling (sharding)</td>
+                            <td>Vertical scaling (stronger server)</td>
+                        </tr>
+                        <tr>
+                            <td>Best For</td>
+                            <td>Rapid development, varied data</td>
+                            <td>Complex relationships, ACID compliance</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2>💾 Database Schema Design</h2>
+            <div class="database-schema">
+                <div class="schema-title">MongoDB Document Structure</div>
+
+                <div class="json-code">{
+  "users": {
+    "_id": "ObjectId('...')",
+    "username": "john_blogger",
+    "email": "john@example.com",
+    "passwordHash": "bcrypt_hash_here",
+    "profile": {
+      "firstName": "John",
+      "lastName": "Doe",
+      "bio": "Passionate developer and writer",
+      "avatar": "https://..."
+    },
+    "createdAt": "2024-12-15T10:30:00.000Z",
+    "updatedAt": "2024-12-15T10:30:00.000Z"
+  }
+}</div>
+
+                <div class="json-code">{
+  "posts": {
+    "_id": "ObjectId('...')",
+    "title": "Getting Started with MongoDB",
+    "content": "MongoDB is a powerful NoSQL database...",
+    "author": "ObjectId('user_id_here')",
+    "tags": ["mongodb", "nodejs", "database", "nosql"],
+    "categories": ["Technology", "Tutorials"],
+    "metadata": {
+      "readTime": "5 minutes",
+      "wordCount": 1250,
+      "featured": true
+    },
+    "stats": {
+      "views": 342,
+      "likes": 23,
+      "shares": 5
+    },
+    "publishedAt": "2024-12-15T10:30:00.000Z",
+    "createdAt": "2024-12-15T10:30:00.000Z"
+  }
+}</div>
+
+                <div class="json-code">{
+  "comments": {
+    "_id": "ObjectId('...')",
+    "content": "Great article! Very helpful explanation.",
+    "post": "ObjectId('post_id_here')",
+    "author": "ObjectId('user_id_here')",
+    "replies": [
+      {
+        "_id": "ObjectId('...')",
+        "content": "Thanks for the feedback!",
+        "author": "ObjectId('author_id_here')",
+        "createdAt": "2024-12-15T11:00:00.000Z"
+      }
+    ],
+    "likes": ["ObjectId('user1')", "ObjectId('user2')"],
+    "createdAt": "2024-12-15T10:45:00.000Z"
+  }
+}</div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2>🎨 Blog Interface Demo</h2>
+            <div class="mock-blog">
+                <div class="blog-header">
+                    <h1 class="blog-title">TechBlog MongoDB</h1>
+                    <p class="blog-subtitle">Exploring the world of NoSQL and modern web development</p>
+                </div>
+
+                <article class="blog-post">
+                    <div class="post-meta">
+                        <span class="post-author">👤 Alice NoSQL</span>
+                        <span class="post-date">📅 December 15, 2024</span>
+                    </div>
+                    <h2 class="post-title">Mastering MongoDB Aggregation Pipelines</h2>
+                    <div class="post-content">
+                        <p>MongoDB's aggregation framework is incredibly powerful for data processing and analysis. In this comprehensive guide, we'll explore how to build complex aggregation pipelines for real-world applications.</p>
+                        <p>From simple grouping operations to advanced text search and geospatial queries, we'll cover everything you need to know to leverage MongoDB's full potential...</p>
+                        <p><strong>Tags:</strong> mongodb, aggregation, pipelines, data-processing</p>
+                    </div>
+                    <div class="post-actions">
+                        <button class="btn btn-primary">👍 Like (45)</button>
+                        <button class="btn btn-secondary">💬 Comments (12)</button>
+                        <button class="btn btn-success">📤 Share</button>
+                    </div>
+                </article>
+
+                <article class="blog-post">
+                    <div class="post-meta">
+                        <span class="post-author">👤 Bob Mongoose</span>
+                        <span class="post-date">📅 December 12, 2024</span>
+                    </div>
+                    <h2 class="post-title">Schema Design Patterns in Mongoose</h2>
+                    <div class="post-content">
+                        <p>Learn the best practices for designing flexible yet robust schemas in Mongoose. We'll cover validation, middleware, virtual properties, and population strategies...</p>
+                        <p><strong>Tags:</strong> mongoose, schema, validation, middleware</p>
+                    </div>
+                    <div class="post-actions">
+                        <button class="btn btn-primary">👍 Like (32)</button>
+                        <button class="btn btn-secondary">💬 Comments (8)</button>
+                        <button class="btn btn-success">📤 Share</button>
+                    </div>
+                </article>
+
+                <article class="blog-post">
+                    <div class="post-meta">
+                        <span class="post-author">👤 Carol Document</span>
+                        <span class="post-date">📅 December 10, 2024</span>
+                    </div>
+                    <h2 class="post-title">When to Choose NoSQL Over SQL</h2>
+                    <div class="post-content">
+                        <p>Understanding when to use NoSQL databases like MongoDB versus traditional SQL databases is crucial for system design. This article breaks down the decision-making process...</p>
+                        <p><strong>Tags:</strong> nosql, sql, database-design, architecture</p>
+                    </div>
+                    <div class="post-actions">
+                        <button class="btn btn-primary">👍 Like (28)</button>
+                        <button class="btn btn-secondary">💬 Comments (15)</button>
+                        <button class="btn btn-success">📤 Share</button>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2>🚀 Getting Started</h2>
+            <p>To run the actual MongoDB Blog application, you'll need:</p>
+
+            <div class="demo-grid">
+                <div class="feature-card">
+                    <h3>📋 Prerequisites</h3>
+                    <ul class="feature-list">
+                        <li>Node.js (v14 or higher)</li>
+                        <li>MongoDB (v4.4 or higher)</li>
+                        <li>npm or yarn package manager</li>
+                        <li>MongoDB Compass (optional GUI)</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>⚙️ Setup Steps</h3>
+                    <ul class="feature-list">
+                        <li>Install dependencies: npm install</li>
+                        <li>Start MongoDB service</li>
+                        <li>Configure connection string</li>
+                        <li>Seed sample data</li>
+                        <li>Start the server: npm start</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <a href="README.md" class="btn btn-primary btn-large">📖 View Documentation</a>
+                <a href="package.json" class="btn btn-secondary btn-large">📦 View Dependencies</a>
+                <a href="server.js" class="btn btn-success btn-large">🔧 View Source Code</a>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2>🎓 Learning Objectives</h2>
+            <p>This project demonstrates mastery of:</p>
+            <div class="demo-grid">
+                <div class="feature-card">
+                    <h3>NoSQL Database Design</h3>
+                    <p>Document-oriented thinking, embedded vs. referenced data, schema flexibility, and when to denormalize for performance.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Mongoose ODM</h3>
+                    <p>Schema definition, validation, middleware hooks, query building, population, and advanced MongoDB features through Mongoose.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>API Development</h3>
+                    <p>RESTful endpoint design, async/await patterns, error handling, data validation, and JSON response formatting.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Modern JavaScript</h3>
+                    <p>ES6+ features, promises, destructuring, template literals, and clean code practices for maintainable applications.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Add some interactivity to demo buttons
+        document.querySelectorAll('.btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                if (!this.href) {
+                    e.preventDefault();
+
+                    // Simulate blog interactions
+                    if (this.textContent.includes('Like')) {
+                        const currentLikes = parseInt(this.textContent.match(/\d+/)[0]);
+                        this.innerHTML = `👍 Like (${currentLikes + 1})`;
+                        this.style.background = '#38ef7d';
+                        this.style.color = '#2c3e50';
+                        setTimeout(() => {
+                            this.style.background = '#11998e';
+                            this.style.color = 'white';
+                        }, 1000);
+                    } else if (this.textContent.includes('Comments')) {
+                        alert('💬 Comments system would show threaded discussions with embedded replies');
+                    } else if (this.textContent.includes('Share')) {
+                        alert('📤 Share functionality would leverage MongoDB\'s flexible document structure for tracking');
+                    }
+                }
+            });
+        });
+
+        // Animate the MongoDB leaf emoji
+        const title = document.querySelector('.header h1');
+        const leafEmoji = title.textContent.charAt(0);
+
+        setInterval(() => {
+            title.style.transform = 'scale(1.05)';
+            setTimeout(() => {
+                title.style.transform = 'scale(1)';
+            }, 200);
+        }, 3000);
+
+        // Add some MongoDB facts
+        const facts = [
+            "MongoDB stores data in flexible, JSON-like documents",
+            "Horizontal scaling is built into MongoDB's architecture",
+            "Aggregation pipelines can process millions of documents efficiently",
+            "MongoDB supports ACID transactions across multiple documents",
+            "Schema validation ensures data integrity without rigid constraints"
+        ];
+
+        let factIndex = 0;
+        function showRandomFact() {
+            console.log(`🍃 MongoDB Fact: ${facts[factIndex]}`);
+            factIndex = (factIndex + 1) % facts.length;
+        }
+
+        setInterval(showRandomFact, 5000);
+        showRandomFact(); // Show first fact immediately
+
+        console.log('🍃 MongoDB Blog Platform Demo loaded!');
+        console.log('🎯 This demonstrates NoSQL database integration with flexible document structure');
+    </script>
+</body>
+</html>

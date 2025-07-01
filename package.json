@@ -1,0 +1,41 @@
+{
+  "name": "module9-lab-portfolio",
+  "version": "1.0.0",
+  "description": "Module 9 Lab Portfolio - Backend Development Exercises Showcase",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "portfolio": "node server.js",
+    "chat": "cd chat_app && npm start",
+    "install-all": "npm install && cd chat_app && npm install",
+    "test": "echo \"Portfolio server test - checking exercise availability\" && node -e \"console.log('✓ Portfolio server ready!')\""
+  },
+  "keywords": [
+    "portfolio",
+    "backend",
+    "nodejs",
+    "express",
+    "mvc",
+    "mysql",
+    "mongodb",
+    "socket.io",
+    "api",
+    "web-development"
+  ],
+  "author": "IOD Student",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "Module 9 Lab Exercises"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MySQL Blog Platform - Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .back-link {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #667eea;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .back-link:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            padding: 60px 0;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            font-size: 3.5em;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .tech-badges {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .tech-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-size: 0.9em;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .content-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .feature-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            border-left: 5px solid #28a745;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .feature-card p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .feature-list li {
+            padding: 5px 0;
+            color: #555;
+            position: relative;
+            padding-left: 25px;
+        }
+
+        .feature-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .mock-blog {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .blog-header {
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .blog-title {
+            color: #2c3e50;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .blog-subtitle {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .blog-post {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-left: 4px solid #007bff;
+        }
+
+        .post-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .post-author {
+            font-weight: 600;
+            color: #007bff;
+        }
+
+        .post-date {
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+
+        .post-title {
+            color: #2c3e50;
+            font-size: 1.4em;
+            margin-bottom: 15px;
+        }
+
+        .post-content {
+            color: #555;
+            line-height: 1.7;
+            margin-bottom: 15px;
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .database-schema {
+            background: #2c3e50;
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 30px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+
+        .schema-title {
+            color: #3498db;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .sql-code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            white-space: pre-wrap;
+            font-size: 0.9em;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+
+        .btn-large {
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border-radius: 30px;
+        }
+
+        .status-banner {
+            background: #ffc107;
+            color: #856404;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5em;
+            }
+
+            .demo-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .post-meta {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="../" class="back-link">← Back to Portfolio</a>
+
+    <div class="container">
+        <header class="header">
+            <h1>📝 MySQL Blog Platform</h1>
+            <p>A full-featured blog platform demonstrating relational database integration with Express.js, featuring user authentication, CRUD operations, and server-side rendering.</p>
+
+            <div class="tech-badges">
+                <span class="tech-badge">Node.js</span>
+                <span class="tech-badge">Express.js</span>
+                <span class="tech-badge">MySQL</span>
+                <span class="tech-badge">EJS Templates</span>
+                <span class="tech-badge">Bootstrap</span>
+                <span class="tech-badge">RESTful API</span>
+            </div>
+        </header>
+
+        <div class="status-banner">
+            ⚠️ This is a demo page. The actual MySQL blog requires database setup and server configuration.
+        </div>
+
+        <section class="content-section">
+            <h2>🎯 Project Overview</h2>
+            <p>This MySQL Blog Platform demonstrates a complete full-stack application with relational database integration. Built with Express.js and MySQL, it showcases modern web development practices including MVC architecture, user authentication, and CRUD operations.</p>
+
+            <div class="demo-grid">
+                <div class="feature-card">
+                    <h3>🗄️ Database Features</h3>
+                    <ul class="feature-list">
+                        <li>MySQL relational database</li>
+                        <li>Normalized table structure</li>
+                        <li>Foreign key relationships</li>
+                        <li>Complex SQL queries</li>
+                        <li>Database migrations</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>👤 User Management</h3>
+                    <ul class="feature-list">
+                        <li>User registration & login</li>
+                        <li>Password hashing & security</li>
+                        <li>Session management</li>
+                        <li>User profile management</li>
+                        <li>Role-based permissions</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>📖 Blog Features</h3>
+                    <ul class="feature-list">
+                        <li>Create, edit, delete posts</li>
+                        <li>Rich text content</li>
+                        <li>Categories & tags</li>
+                        <li>Comments system</li>
+                        <li>Like/dislike functionality</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>🌐 Web Features</h3>
+                    <ul class="feature-list">
+                        <li>Server-side rendering (EJS)</li>
+                        <li>Responsive Bootstrap UI</li>
+                        <li>RESTful API endpoints</li>
+                        <li>Form validation</li>
+                        <li>Error handling</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2>💾 Database Schema</h2>
+            <div class="database-schema">
+                <div class="schema-title">MySQL Database Structure</div>
+
+                <div class="sql-code">CREATE TABLE users (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);</div>
+
+                <div class="sql-code">CREATE TABLE posts (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    title VARCHAR(200) NOT NULL,
+    content TEXT NOT NULL,
+    author_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE CASCADE
+);</div>
+
+                <div class="sql-code">CREATE TABLE comments (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    content TEXT NOT NULL,
+    post_id INT NOT NULL,
+    user_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);</div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2>🎨 Blog Interface Demo</h2>
+            <div class="mock-blog">
+                <div class="blog-header">
+                    <h1 class="blog-title">TechBlog MySQL</h1>
+                    <p class="blog-subtitle">Sharing knowledge about web development and technology</p>
+                </div>
+
+                <article class="blog-post">
+                    <div class="post-meta">
+                        <span class="post-author">👤 John Developer</span>
+                        <span class="post-date">📅 December 15, 2024</span>
+                    </div>
+                    <h2 class="post-title">Getting Started with MySQL and Node.js</h2>
+                    <div class="post-content">
+                        <p>MySQL is one of the most popular relational database management systems. In this post, we'll explore how to integrate MySQL with Node.js applications, covering connection setup, query execution, and best practices for database operations.</p>
+                        <p>We'll also look at using connection pools, handling transactions, and implementing proper error handling for robust database interactions...</p>
+                    </div>
+                    <div class="post-actions">
+                        <button class="btn btn-primary">👍 Like (23)</button>
+                        <button class="btn btn-secondary">💬 Comments (5)</button>
+                        <button class="btn btn-success">📤 Share</button>
+                    </div>
+                </article>
+
+                <article class="blog-post">
+                    <div class="post-meta">
+                        <span class="post-author">👤 Sarah Backend</span>
+                        <span class="post-date">📅 December 12, 2024</span>
+                    </div>
+                    <h2 class="post-title">Database Design Patterns for Web Applications</h2>
+                    <div class="post-content">
+                        <p>Proper database design is crucial for scalable web applications. This article covers normalization, indexing strategies, and relationship modeling in MySQL...</p>
+                    </div>
+                    <div class="post-actions">
+                        <button class="btn btn-primary">👍 Like (18)</button>
+                        <button class="btn btn-secondary">💬 Comments (3)</button>
+                        <button class="btn btn-success">📤 Share</button>
+                    </div>
+                </article>
+
+                <article class="blog-post">
+                    <div class="post-meta">
+                        <span class="post-author">👤 Mike Fullstack</span>
+                        <span class="post-date">📅 December 10, 2024</span>
+                    </div>
+                    <h2 class="post-title">Building RESTful APIs with Express and MySQL</h2>
+                    <div class="post-content">
+                        <p>Learn how to create robust RESTful APIs using Express.js and MySQL. We'll cover routing, middleware, error handling, and database integration patterns...</p>
+                    </div>
+                    <div class="post-actions">
+                        <button class="btn btn-primary">👍 Like (31)</button>
+                        <button class="btn btn-secondary">💬 Comments (8)</button>
+                        <button class="btn btn-success">📤 Share</button>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2>🚀 Getting Started</h2>
+            <p>To run the actual MySQL Blog application, you'll need:</p>
+
+            <div class="demo-grid">
+                <div class="feature-card">
+                    <h3>📋 Prerequisites</h3>
+                    <ul class="feature-list">
+                        <li>Node.js (v14 or higher)</li>
+                        <li>MySQL Server (v8.0 or higher)</li>
+                        <li>npm or yarn package manager</li>
+                        <li>Git for version control</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>⚙️ Setup Steps</h3>
+                    <ul class="feature-list">
+                        <li>Install dependencies: npm install</li>
+                        <li>Configure database connection</li>
+                        <li>Run database migrations</li>
+                        <li>Seed initial data</li>
+                        <li>Start the server: npm start</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <a href="README.md" class="btn btn-primary btn-large">📖 View Documentation</a>
+                <a href="package.json" class="btn btn-secondary btn-large">📦 View Dependencies</a>
+                <a href="server.js" class="btn btn-success btn-large">🔧 View Source Code</a>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2>🎓 Learning Objectives</h2>
+            <p>This project demonstrates mastery of:</p>
+            <div class="demo-grid">
+                <div class="feature-card">
+                    <h3>Backend Development</h3>
+                    <p>Express.js server setup, middleware configuration, routing, and API development with proper error handling and validation.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Database Integration</h3>
+                    <p>MySQL database design, connection management, complex queries, transactions, and relationship modeling.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Full-Stack Architecture</h3>
+                    <p>MVC pattern implementation, server-side rendering, user authentication, and complete CRUD operations.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Web Standards</h3>
+                    <p>RESTful API design, HTTP methods, status codes, security best practices, and responsive web design.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Add some interactivity to demo buttons
+        document.querySelectorAll('.btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                if (!this.href) {
+                    e.preventDefault();
+
+                    // Simulate blog interactions
+                    if (this.textContent.includes('Like')) {
+                        const currentLikes = parseInt(this.textContent.match(/\d+/)[0]);
+                        this.innerHTML = `👍 Like (${currentLikes + 1})`;
+                        this.style.background = '#28a745';
+                        setTimeout(() => {
+                            this.style.background = '#007bff';
+                        }, 1000);
+                    } else if (this.textContent.includes('Comments')) {
+                        alert('💬 Comments feature would open a modal or navigate to comments section');
+                    } else if (this.textContent.includes('Share')) {
+                        alert('📤 Share functionality would open social media options');
+                    }
+                }
+            });
+        });
+
+        // Add typing effect to the title
+        const title = document.querySelector('.header h1');
+        const originalText = title.textContent;
+        title.textContent = '';
+
+        let i = 0;
+        function typeWriter() {
+            if (i < originalText.length) {
+                title.textContent += originalText.charAt(i);
+                i++;
+                setTimeout(typeWriter, 100);
+            }
+        }
+
+        setTimeout(typeWriter, 500);
+
+        console.log('📝 MySQL Blog Platform Demo loaded!');
+        console.log('🎯 This demonstrates relational database integration with Express.js');
+    </script>
+</body>
+</html>
