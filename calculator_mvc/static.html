@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator MVC - Static Version</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .calculator {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+            font-weight: 500;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ecf0f1;
+            border-radius: 10px;
+            font-size: 1.1em;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .history-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .calc-button {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+        }
+
+        .add-btn {
+            background: #27ae60;
+        }
+
+        .subtract-btn {
+            background: #e74c3c;
+        }
+
+        .multiply-btn {
+            background: #f39c12;
+        }
+
+        .divide-btn {
+            background: #9b59b6;
+        }
+
+        .history-btn {
+            background: #3498db;
+        }
+
+        .clear-btn {
+            background: #95a5a6;
+        }
+
+        .calc-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .calc-button:active {
+            transform: translateY(0);
+        }
+
+        .result-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            text-align: center;
+        }
+
+        .result-label {
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .result-display {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: #2c3e50;
+            margin: 10px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            border: 2px solid #ecf0f1;
+        }
+
+        .operation-display {
+            color: #7f8c8d;
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+
+        .error {
+            color: #e74c3c !important;
+        }
+
+        .success {
+            color: #27ae60 !important;
+        }
+
+        .loading {
+            color: #f39c12 !important;
+        }
+
+        .api-info {
+            background: #ebf3fd;
+            border: 1px solid #3498db;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .history-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .history-item {
+            background: white;
+            padding: 10px 15px;
+            margin: 5px 0;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+
+        .stats-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .mvc-info {
+            background: #e8f5e8;
+            border: 1px solid #27ae60;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .mvc-info h3 {
+            color: #27ae60;
+            margin-bottom: 10px;
+        }
+
+        .mvc-components {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .mvc-component {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 2px solid #27ae60;
+        }
+
+        .mvc-component h4 {
+            color: #27ae60;
+            margin-bottom: 5px;
+        }
+
+        .mvc-component p {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .calculator {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .button-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .result-display {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <h1>🧮 Calculator MVC</h1>
+        <p class="subtitle">Model-View-Controller Architecture Pattern</p>
+
+        <div class="mvc-info">
+            <h3>MVC Architecture Demonstration</h3>
+            <p>This calculator demonstrates the Model-View-Controller pattern with clear separation of concerns:</p>
+            <div class="mvc-components">
+                <div class="mvc-component">
+                    <h4>Model</h4>
+                    <p>Handles calculation logic and data storage</p>
+                </div>
+                <div class="mvc-component">
+                    <h4>View</h4>
+                    <p>Manages UI updates and user interactions</p>
+                </div>
+                <div class="mvc-component">
+                    <h4>Controller</h4>
+                    <p>Coordinates between Model and View</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label for="num1">First Number:</label>
+            <input type="number" id="num1" placeholder="Enter first number" step="any">
+        </div>
+
+        <div class="input-group">
+            <label for="num2">Second Number:</label>
+            <input type="number" id="num2" placeholder="Enter second number" step="any">
+        </div>
+
+        <div class="button-grid">
+            <button class="calc-button add-btn" onclick="calculatorController.performOperation('add')">
+                + Add
+            </button>
+            <button class="calc-button subtract-btn" onclick="calculatorController.performOperation('subtract')">
+                - Subtract
+            </button>
+            <button class="calc-button multiply-btn" onclick="calculatorController.performOperation('multiply')">
+                × Multiply
+            </button>
+            <button class="calc-button divide-btn" onclick="calculatorController.performOperation('divide')">
+                ÷ Divide
+            </button>
+        </div>
+
+        <div class="history-grid">
+            <button class="calc-button history-btn" onclick="calculatorController.toggleHistory()">
+                📊 Show History
+            </button>
+            <button class="calc-button clear-btn" onclick="calculatorController.clearHistory()">
+                🗑️ Clear History
+            </button>
+        </div>
+
+        <div class="result-section">
+            <div class="result-label">Result:</div>
+            <div class="result-display" id="result">Enter numbers and choose operation</div>
+            <div class="operation-display" id="operationDisplay"></div>
+        </div>
+
+        <div class="api-info">
+            <strong>✅ Static Version Active</strong><br>
+            This version runs entirely in the browser using client-side MVC architecture.
+            Perfect for static hosting like Netlify!
+        </div>
+
+        <div class="history-section hidden" id="historySection">
+            <h3>Calculation History</h3>
+            <div id="historyContent">No calculations yet.</div>
+        </div>
+    </div>
+
+    <script>
+        // MODEL - Calculator Model Class
+        class CalculatorModel {
+            constructor() {
+                this.history = JSON.parse(localStorage.getItem('calculatorHistory')) || [];
+                this.currentResult = null;
+            }
+
+            // Core calculation methods
+            add(a, b) {
+                return a + b;
+            }
+
+            subtract(a, b) {
+                return a - b;
+            }
+
+            multiply(a, b) {
+                return a * b;
+            }
+
+            divide(a, b) {
+                if (b === 0) {
+                    throw new Error('Cannot divide by zero');
+                }
+                return a / b;
+            }
+
+            // Perform calculation and store in history
+            calculate(operation, num1, num2) {
+                let result;
+
+                switch(operation) {
+                    case 'add':
+                        result = this.add(num1, num2);
+                        break;
+                    case 'subtract':
+                        result = this.subtract(num1, num2);
+                        break;
+                    case 'multiply':
+                        result = this.multiply(num1, num2);
+                        break;
+                    case 'divide':
+                        result = this.divide(num1, num2);
+                        break;
+                    default:
+                        throw new Error('Invalid operation');
+                }
+
+                // Round to avoid floating point precision issues
+                result = Math.round(result * 100000000) / 100000000;
+
+                // Store in history
+                const historyItem = {
+                    operation,
+                    num1,
+                    num2,
+                    result,
+                    timestamp: new Date().toLocaleString()
+                };
+
+                this.history.unshift(historyItem);
+
+                // Keep only last 20 calculations
+                if (this.history.length > 20) {
+                    this.history = this.history.slice(0, 20);
+                }
+
+                // Save to localStorage
+                localStorage.setItem('calculatorHistory', JSON.stringify(this.history));
+
+                this.currentResult = result;
+                return result;
+            }
+
+            // Get calculation history
+            getHistory() {
+                return this.history;
+            }
+
+            // Clear history
+            clearHistory() {
+                this.history = [];
+                localStorage.removeItem('calculatorHistory');
+            }
+
+            // Get statistics
+            getStats() {
+                const stats = {
+                    totalCalculations: this.history.length,
+                    operations: {
+                        add: 0,
+                        subtract: 0,
+                        multiply: 0,
+                        divide: 0
+                    }
+                };
+
+                this.history.forEach(item => {
+                    stats.operations[item.operation]++;
+                });
+
+                return stats;
+            }
+        }
+
+        // VIEW - Calculator View Class
+        class CalculatorView {
+            constructor() {
+                this.resultDisplay = document.getElementById('result');
+                this.operationDisplay = document.getElementById('operationDisplay');
+                this.historySection = document.getElementById('historySection');
+                this.historyContent = document.getElementById('historyContent');
+                this.num1Input = document.getElementById('num1');
+                this.num2Input = document.getElementById('num2');
+
+                this.operationSymbols = {
+                    add: '+',
+                    subtract: '-',
+                    multiply: '×',
+                    divide: '÷'
+                };
+            }
+
+            // Get input values
+            getInputs() {
+                const num1 = parseFloat(this.num1Input.value);
+                const num2 = parseFloat(this.num2Input.value);
+                return { num1, num2 };
+            }
+
+            // Validate inputs
+            validateInputs(num1, num2) {
+                if (this.num1Input.value === '' || this.num2Input.value === '') {
+                    throw new Error('Please enter both numbers');
+                }
+
+                if (isNaN(num1) || isNaN(num2)) {
+                    throw new Error('Please enter valid numbers');
+                }
+
+                return true;
+            }
+
+            // Display result
+            showResult(result, type = 'success') {
+                this.resultDisplay.textContent = result;
+                this.resultDisplay.className = `result-display ${type}`;
+
+                if (type === 'success') {
+                    // Add a subtle animation for successful calculations
+                    this.resultDisplay.style.transform = 'scale(1.05)';
+                    setTimeout(() => {
+                        this.resultDisplay.style.transform = 'scale(1)';
+                    }, 200);
+                }
+            }
+
+            // Display operation
+            showOperation(num1, operation, num2, result) {
+                const symbol = this.operationSymbols[operation];
+                this.operationDisplay.textContent = `${num1} ${symbol} ${num2} = ${result}`;
+            }
+
+            // Show error
+            showError(message) {
+                this.showResult(message, 'error');
+                this.operationDisplay.textContent = '';
+            }
+
+            // Toggle history display
+            toggleHistory(history) {
+                if (this.historySection.classList.contains('hidden')) {
+                    this.displayHistory(history);
+                    this.historySection.classList.remove('hidden');
+                    return true; // History is now showing
+                } else {
+                    this.historySection.classList.add('hidden');
+                    return false; // History is now hidden
+                }
+            }
+
+            // Display history
+            displayHistory(history) {
+                if (history.length === 0) {
+                    this.historyContent.innerHTML = '<p>No calculations yet.</p>';
+                    return;
+                }
+
+                const historyHTML = history.map(item => {
+                    const symbol = this.operationSymbols[item.operation];
+                    return `
+                        <div class="history-item">
+                            <strong>${item.num1} ${symbol} ${item.num2} = ${item.result}</strong>
+                            <br><small>${item.timestamp}</small>
+                        </div>
+                    `;
+                }).join('');
+
+                this.historyContent.innerHTML = historyHTML;
+            }
+
+            // Clear inputs
+            clearInputs() {
+                this.num1Input.value = '';
+                this.num2Input.value = '';
+                this.num1Input.focus();
+            }
+
+            // Show loading state
+            showLoading() {
+                this.showResult('Calculating...', 'loading');
+            }
+        }
+
+        // CONTROLLER - Calculator Controller Class
+        class CalculatorController {
+            constructor(model, view) {
+                this.model = model;
+                this.view = view;
+                this.isHistoryVisible = false;
+
+                // Set up event listeners
+                this.setupEventListeners();
+
+                console.log('Calculator MVC initialized');
+                console.log('Model:', this.model);
+                console.log('View:', this.view);
+                console.log('Controller:', this);
+            }
+
+            // Set up event listeners
+            setupEventListeners() {
+                // Enter key support
+                document.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        // Default to addition if Enter is pressed
+                        this.performOperation('add');
+                    }
+                });
+
+                // Number input validation
+                [this.view.num1Input, this.view.num2Input].forEach(input => {
+                    input.addEventListener('input', () => {
+                        // Reset result display when inputs change
+                        if (this.view.resultDisplay.textContent !== 'Enter numbers and choose operation') {
+                            this.view.showResult('Enter numbers and choose operation');
+                            this.view.operationDisplay.textContent = '';
+                        }
+                    });
+                });
+            }
+
+            // Perform calculation
+            performOperation(operation) {
+                try {
+                    // Show loading
+                    this.view.showLoading();
+
+                    // Get and validate inputs
+                    const { num1, num2 } = this.view.getInputs();
+                    this.view.validateInputs(num1, num2);
+
+                    // Perform calculation using model
+                    const result = this.model.calculate(operation, num1, num2);
+
+                    // Display result using view
+                    this.view.showResult(result);
+                    this.view.showOperation(num1, operation, num2, result);
+
+                    // Log for debugging
+                    console.log(`${num1} ${operation} ${num2} = ${result}`);
+
+                } catch (error) {
+                    console.error('Calculation error:', error);
+                    this.view.showError(error.message);
+                }
+            }
+
+            // Toggle history display
+            toggleHistory() {
+                const history = this.model.getHistory();
+                this.isHistoryVisible = this.view.toggleHistory(history);
+
+                // Update button text
+                const historyBtn = document.querySelector('.history-btn');
+                historyBtn.textContent = this.isHistoryVisible ? '📊 Hide History' : '📊 Show History';
+            }
+
+            // Clear history
+            clearHistory() {
+                if (confirm('Are you sure you want to clear all calculation history?')) {
+                    this.model.clearHistory();
+
+                    // Update view if history is visible
+                    if (this.isHistoryVisible) {
+                        this.view.displayHistory([]);
+                    }
+
+                    // Show confirmation
+                    this.view.showResult('History cleared');
+                    this.view.operationDisplay.textContent = '';
+
+                    console.log('History cleared');
+                }
+            }
+
+            // Get statistics (for potential future use)
+            getStats() {
+                return this.model.getStats();
+            }
+        }
+
+        // INITIALIZATION - Create MVC instances
+        const calculatorModel = new CalculatorModel();
+        const calculatorView = new CalculatorView();
+        const calculatorController = new CalculatorController(calculatorModel, calculatorView);
+
+        // Make controller globally accessible for button clicks
+        window.calculatorController = calculatorController;
+
+        // Focus first input on load
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('num1').focus();
+        });
+
+        // Add some helpful console messages
+        console.log('=== Calculator MVC Pattern Demo ===');
+        console.log('This calculator demonstrates the MVC architecture pattern:');
+        console.log('• Model: Handles calculation logic and data persistence');
+        console.log('• View: Manages UI updates and user input');
+        console.log('• Controller: Coordinates between Model and View');
+        console.log('=====================================');
+    </script>
+</body>
+</html>
